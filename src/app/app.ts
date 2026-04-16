@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-type AuthView = 'auth' | 'dashboard';
+type AuthView = 'auth' | 'dashboard' | 'about';
 type AuthMode = 'login' | 'register';
 type LastAction = '' | 'login' | 'register';
 type RegisterMode = 'create' | 'edit';
@@ -267,6 +267,14 @@ export class App {
     this.searchTerm = '';
     this.activeSearchTerm = '';
     this.cancelEdit();
+  }
+
+  showAbout() {
+    this.view = 'about';
+  }
+
+  showAuthPage() {
+    this.view = 'auth';
   }
 
   onRegister() {

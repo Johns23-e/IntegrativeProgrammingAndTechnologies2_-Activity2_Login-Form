@@ -47,6 +47,10 @@
     </div>
 
     <div class="right-panel" [class.right-panel--register]="authMode === 'register'">
+      <button type="button" class="about-btn-in-form" (click)="showAbout()">
+        About Me
+      </button>
+
       <ng-container *ngIf="authMode === 'login'">
         <h2>Login</h2>
         <p class="form-subtitle">Sign in with your EVSU email and password.</p>
@@ -238,4 +242,92 @@
       </div>
     </div>
   </section>
+</div>
+
+<div class="about-page" *ngIf="view === 'about'">
+  <div class="about-container">
+    <div class="about-topbar">
+      <button type="button" class="back-btn" (click)="showAuthPage()">Back to Login</button>
+    </div>
+
+    <section class="about-content">
+      <div class="about-card">
+        <div class="about-page-heading">
+          <h1>About Me</h1>
+          <p>Personal profile, interests, and leadership experience.</p>
+        </div>
+
+        <div class="about-profile">
+          <img class="about-avatar-img" src="/john.png" alt="John Roque B. Abina" />
+          <div>
+            <h2>John Roque B. Abina</h2>
+            <p class="subtitle">BSIT 3A Student • EVSU Dulag Campus</p>
+          </div>
+        </div>
+
+        <div class="about-section">
+          <h3>About Me</h3>
+          <p>
+            I am currently a Bachelor of Science in Information Technology student
+            at EVSU Dulag Campus. I am passionate about both technology and creativity.
+            I enjoy photography, storytelling, and digital editing, where I combine
+            technical skills with creative expression to produce meaningful outputs.
+          </p>
+        </div>
+
+        <div class="about-section">
+          <h3>Interests &amp; Skills</h3>
+          <ul class="tags">
+            <li>Photography</li>
+            <li>Story Creation</li>
+            <li>Digital Editing</li>
+            <li>Web Development</li>
+            <li>Leadership</li>
+          </ul>
+        </div>
+
+        <div class="about-section">
+          <h3>Leadership &amp; Organizations</h3>
+          <ul class="timeline">
+            <li>
+              <strong>Balirahhay Rescue Team (JRNHS)</strong>
+              <span>Photojournalist (2020) • President (2022)</span>
+            </li>
+            <li>
+              <strong>Supreme Student Government (JRNHS)</strong>
+              <span>Representative (G8-9) • Vice President (G10-11) • President (G12)</span>
+            </li>
+            <li>
+              <strong>Eco-Friendly Organization</strong>
+              <span>Electricity Conservation Advocate</span>
+            </li>
+            <li>
+              <strong>Guidance Office (JRNHS)</strong>
+              <span>Counselor Officer</span>
+            </li>
+            <li>
+              <strong>INTEL Organization (EVSU Dulag)</strong>
+              <span>President (2024-2025) • Student Adviser</span>
+            </li>
+            <li>
+              <strong>SSG (EVSU Dulag)</strong>
+              <span>Vice President (Current)</span>
+            </li>
+            <li>
+              <strong>FSG (EVSU)</strong>
+              <span>Commissioner - Gender and Development (GAD)</span>
+            </li>
+            <li>
+              <strong>PYAP (Brgy. Rizal, Dulag Leyte)</strong>
+              <span>Vice President</span>
+            </li>
+            <li>
+              <strong>4H Club (Rizal, Dulag Leyte)</strong>
+              <span>Technology Director</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
 </div>

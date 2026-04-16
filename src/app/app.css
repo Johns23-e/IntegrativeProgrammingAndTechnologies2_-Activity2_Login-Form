@@ -528,6 +528,10 @@ input:focus {
   padding: 12px 14px;
 }
 
+.form-feedback {
+  margin-top: 12px;
+}
+
 .error {
   color: #cc0000;
   background: #fff1f1;

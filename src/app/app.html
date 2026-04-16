@@ -13,43 +13,86 @@
   </div>
 </div>
 
-<div class="wrapper" *ngIf="view === 'auth'">
-  <div class="left-panel">
+<div class="auth-page" *ngIf="view === 'auth'">
+  <div class="wrapper">
+    <div class="left-panel" [class.left-panel--register]="authMode === 'register'">
+    <div class="logo-wrap">
+      <div class="logo-tag">Official Portal</div>
+      <div class="logo">CampusAssist</div>
+    </div>
 
-    <img src="/css.jpg" class="side-image" alt="CampusAssist">
+    <h1 class="left-title">A complaint monitoring system</h1>
 
-    <div class="logo">CampusAssist</div>
-
-    <h1>A complaint monitoring system</h1>
-
-    <p>
+    <p class="left-description">
       CampusAssist helps streamline, track, and resolve student concerns efficiently within EVSU.
     </p>
 
-  </div>
+    <div class="left-highlights">
+      <div class="highlight-item">
+        <span class="highlight-label">Service Status</span>
+        <strong>Online</strong>
+      </div>
+      <div class="highlight-item">
+        <span class="highlight-label">Target Response</span>
+        <strong>Within 24 Hours</strong>
+      </div>
+      <div class="highlight-item">
+        <span class="highlight-label">Coverage</span>
+        <strong>All EVSU Departments</strong>
+      </div>
+    </div>
 
-  <div class="right-panel" [class.right-panel--register]="authMode === 'register'">
+    <img src="/css.jpg" class="side-image" alt="CampusAssist" />
+
+    </div>
+
+    <div class="right-panel" [class.right-panel--register]="authMode === 'register'">
     <ng-container *ngIf="authMode === 'login'">
       <h2>Login</h2>
+      <p class="form-subtitle">Sign in with your username and password.</p>
 
-      <input
-        type="text"
-        placeholder="Username"
-        [(ngModel)]="username"
-      />
+      <div class="field-group">
+        <label for="login-username">Username</label>
+        <input
+          id="login-username"
+          type="text"
+          placeholder="Enter your username"
+          [(ngModel)]="username"
+        />
+      </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        [(ngModel)]="password"
-      />
+      <div class="field-group">
+        <label for="login-password">Password</label>
+        <div class="password-row">
+          <input
+            id="login-password"
+            [type]="showLoginPassword ? 'text' : 'password'"
+            placeholder="Enter your password"
+            [(ngModel)]="password"
+          />
+          <button
+            type="button"
+            class="toggle-password-btn"
+            (click)="togglePassword('login')"
+          >
+            {{ showLoginPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+      </div>
 
       <div class="options">
-        <label><input type="checkbox" /> Remember me</label>
+        <label><input type="checkbox" [(ngModel)]="rememberMe" /> Remember me</label>
         <a href="#">Forgot password?</a>
       </div>
 
-      <button type="button" class="login-btn" (click)="onLogin()">Login</button>
+      <button
+        type="button"
+        class="login-btn"
+        (click)="onLogin()"
+        [disabled]="!username.trim() || !password.trim()"
+      >
+        Login
+      </button>
 
       <p class="switch-auth">
         Don't have an account?
@@ -59,34 +102,114 @@
 
     <ng-container *ngIf="authMode === 'register'">
       <h2>Create account</h2>
+      <p class="form-subtitle">Create your account to start using CampusAssist.</p>
 
-      <input
-        type="text"
-        placeholder="Username"
-        [(ngModel)]="registerUsername"
-      />
+      <div class="field-group">
+        <label for="register-username">Username</label>
+        <input
+          id="register-username"
+          type="text"
+          placeholder="Choose a username"
+          [(ngModel)]="registerUsername"
+        />
+      </div>
 
-      <input
-        type="password"
-        placeholder="Password"
-        [(ngModel)]="registerPassword"
-      />
+      <div class="field-group">
+        <label for="register-user-id">User ID</label>
+        <input
+          id="register-user-id"
+          type="text"
+          placeholder="0000-00000"
+          [(ngModel)]="registerUserId"
+        />
+        <small class="hint-text">Format: 0000-00000</small>
+      </div>
 
-      <input
-        type="password"
-        placeholder="Confirm password"
-        [(ngModel)]="registerConfirmPassword"
-      />
+      <div class="field-group">
+        <label for="register-password">Password</label>
+        <div class="password-row">
+          <input
+            id="register-password"
+            [type]="showRegisterPassword ? 'text' : 'password'"
+            placeholder="Create a password"
+            [(ngModel)]="registerPassword"
+          />
+          <button
+            type="button"
+            class="toggle-password-btn"
+            (click)="togglePassword('register')"
+          >
+            {{ showRegisterPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+      </div>
 
-      <button type="button" class="login-btn register-submit" (click)="onRegister()">Register</button>
+      <div class="field-group">
+        <label for="confirm-password">Confirm password</label>
+        <div class="password-row">
+          <input
+            id="confirm-password"
+            [type]="showRegisterConfirmPassword ? 'text' : 'password'"
+            placeholder="Retype your password"
+            [(ngModel)]="registerConfirmPassword"
+          />
+          <button
+            type="button"
+            class="toggle-password-btn"
+            (click)="togglePassword('confirm')"
+          >
+            {{ showRegisterConfirmPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <small class="hint-text">Use at least 4 characters.</small>
+      </div>
+
+      <button
+        type="button"
+        class="login-btn register-submit"
+        (click)="onRegister()"
+        [disabled]="!registerUsername.trim() || !registerUserId.trim() || !registerPassword || !registerConfirmPassword"
+      >
+        Register
+      </button>
 
       <p class="switch-auth">
         Already have an account?
         <a href="#" (click)="$event.preventDefault(); switchAuthMode('login')">Login</a>
       </p>
+
     </ng-container>
 
     <p class="success" *ngIf="message">{{ message }}</p>
     <p class="error" *ngIf="error">{{ error }}</p>
+    </div>
   </div>
+
+  <section class="auth-output-section" *ngIf="authMode === 'register'">
+    <div class="auth-output-container">
+      <div class="registered-table output-panel" id="registration-output">
+        <h3>Registration output</h3>
+        <p class="registered-caption">Submitted accounts appear here immediately after you click Register.</p>
+        <div class="empty-output" *ngIf="registeredUsers.length === 0">
+          No registered users yet. Fill out the form and click Register to see output here.
+        </div>
+        <table *ngIf="registeredUsers.length > 0">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Username</th>
+              <th>User ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of registeredUsers; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.userId }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </div>

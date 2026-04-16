@@ -21,8 +21,13 @@ export class App {
   password = '';
 
   registerUsername = '';
+  registerUserId = '';
   registerPassword = '';
   registerConfirmPassword = '';
+  rememberMe = false;
+  showLoginPassword = false;
+  showRegisterPassword = false;
+  showRegisterConfirmPassword = false;
 
   loggedInDisplayName = '';
 
@@ -32,7 +37,7 @@ export class App {
   correctUsername = 'JOHN ROQUE ABINA';
   correctPassword = '2023-00145';
 
-  private registeredUsers: { username: string; password: string }[] = [];
+  registeredUsers: { username: string; userId: string; password: string }[] = [];
 
   switchAuthMode(mode: AuthMode) {
     this.authMode = mode;
@@ -40,13 +45,31 @@ export class App {
     this.error = '';
   }
 
+  togglePassword(field: 'login' | 'register' | 'confirm') {
+    if (field === 'login') {
+      this.showLoginPassword = !this.showLoginPassword;
+      return;
+    }
+    if (field === 'register') {
+      this.showRegisterPassword = !this.showRegisterPassword;
+      return;
+    }
+    this.showRegisterConfirmPassword = !this.showRegisterConfirmPassword;
+  }
+
   onRegister() {
     const u = this.registerUsername.trim();
+    const id = this.registerUserId.trim();
     const p = this.registerPassword;
     const c = this.registerConfirmPassword;
 
-    if (!u || !p || !c) {
+    if (!u || !id || !p || !c) {
       this.error = 'Please fill in all fields.';
+      this.message = '';
+      return;
+    }
+    if (!/^\d{4}-\d{5}$/.test(id)) {
+      this.error = 'User ID must follow this format: 0000-00000.';
       this.message = '';
       return;
     }
@@ -69,14 +92,21 @@ export class App {
       this.message = '';
       return;
     }
+    const idExists = this.registeredUsers.some((x) => x.userId === id);
+    if (idExists) {
+      this.error = 'This user ID is already registered.';
+      this.message = '';
+      return;
+    }
 
-    this.registeredUsers.push({ username: u, password: p });
-    this.message = 'Account created! You can now log in.';
+    this.registeredUsers.push({ username: u, userId: id, password: p });
+    this.message = 'Account created successfully. You can see it now in the table below.';
     this.error = '';
     this.registerUsername = '';
+    this.registerUserId = '';
     this.registerPassword = '';
     this.registerConfirmPassword = '';
-    this.authMode = 'login';
+    this.authMode = 'register';
   }
 
   onLogin() {

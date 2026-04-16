@@ -1,7 +1,22 @@
-<div class="wrapper">
+<div class="dashboard-page" *ngIf="view === 'dashboard'">
+  <div class="dashboard-card">
+    <div class="dashboard-badge">CampusAssist</div>
+    <h1 class="dashboard-title">Welcome, {{ loggedInDisplayName }}!</h1>
+    <p class="dashboard-lead">
+      You're signed in to Integrative Programming and Technologies 2.
+      Use the complaint monitoring tools from your dashboard when they're available.
+    </p>
+    <p class="dashboard-hint">
+      Keep learning, stay curious, and enjoy the journey.
+    </p>
+    <button type="button" class="logout-btn" (click)="logout()">Log out</button>
+  </div>
+</div>
+
+<div class="wrapper" *ngIf="view === 'auth'">
   <div class="left-panel">
 
-    <img src="/css.jpg" class="side-image">
+    <img src="/css.jpg" class="side-image" alt="CampusAssist">
 
     <div class="logo">CampusAssist</div>
 
@@ -13,22 +28,63 @@
 
   </div>
 
-  <div class="right-panel">
-    <h2>Login</h2>
+  <div class="right-panel" [class.right-panel--register]="authMode === 'register'">
+    <ng-container *ngIf="authMode === 'login'">
+      <h2>Login</h2>
 
-    <input
-      type="text"
-      placeholder="Username"
-      [(ngModel)]="username"
-    />
-    
+      <input
+        type="text"
+        placeholder="Username"
+        [(ngModel)]="username"
+      />
 
-    <div class="options">
-      <label><input type="checkbox" /> Remember me</label>
-      <a href="#">Forgot password?</a>
-    </div>
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+      />
 
-    <button class="login-btn" (click)="onLogin()">Login</button>
+      <div class="options">
+        <label><input type="checkbox" /> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button type="button" class="login-btn" (click)="onLogin()">Login</button>
+
+      <p class="switch-auth">
+        Don't have an account?
+        <a href="#" (click)="$event.preventDefault(); switchAuthMode('register')">Register</a>
+      </p>
+    </ng-container>
+
+    <ng-container *ngIf="authMode === 'register'">
+      <h2>Create account</h2>
+
+      <input
+        type="text"
+        placeholder="Username"
+        [(ngModel)]="registerUsername"
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="registerPassword"
+      />
+
+      <input
+        type="password"
+        placeholder="Confirm password"
+        [(ngModel)]="registerConfirmPassword"
+      />
+
+      <button type="button" class="login-btn register-submit" (click)="onRegister()">Register</button>
+
+      <p class="switch-auth">
+        Already have an account?
+        <a href="#" (click)="$event.preventDefault(); switchAuthMode('login')">Login</a>
+      </p>
+    </ng-container>
 
     <p class="success" *ngIf="message">{{ message }}</p>
     <p class="error" *ngIf="error">{{ error }}</p>

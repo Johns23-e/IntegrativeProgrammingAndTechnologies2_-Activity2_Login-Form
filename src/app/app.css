@@ -633,3 +633,238 @@ input:focus {
     height: 170px;
   }
 }
+
+/* -----------------------------
+   Portfolio (Standalone Page)
+   ----------------------------- */
+.portfolio-page {
+  min-height: 100vh;
+  padding: 28px 22px 40px;
+  background: linear-gradient(150deg, #3d0000 0%, #5f0000 45%, #860000 100%);
+  font-family: "Inter", sans-serif;
+  color: #151515;
+}
+
+.portfolio-header {
+  max-width: 1100px;
+  margin: 0 auto 18px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 16px;
+  padding: 14px 16px;
+  backdrop-filter: blur(8px);
+}
+
+.portfolio-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, #ffffff, #ffe6e6);
+  border: 2px solid rgba(176, 0, 0, 0.35);
+  color: #7a0000;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.brand-sub {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 2px;
+}
+
+.portfolio-main {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.portfolio-hero {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 250, 0.9));
+  border: 1px solid rgba(176, 0, 0, 0.18);
+  border-radius: 22px;
+  padding: 22px 22px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+}
+
+.hero-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid rgba(176, 0, 0, 0.95);
+  overflow: hidden;
+  flex: 0 0 auto;
+  background: #ffecec;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+.hero-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-copy h1 {
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 900;
+  color: #5f0000;
+}
+
+.hero-subtitle {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: #6c0000;
+}
+
+.hero-lead {
+  margin: 0;
+  line-height: 1.7;
+  color: #2f2f2f;
+  font-size: 14px;
+}
+
+.portfolio-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.portfolio-card {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(176, 0, 0, 0.14);
+  border-radius: 18px;
+  padding: 18px 18px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  position: relative;
+}
+
+.portfolio-card::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #b10000, #6d0000);
+  opacity: 0.9;
+}
+
+.portfolio-card--wide {
+  grid-column: 1 / -1;
+}
+
+.portfolio-card h2 {
+  margin: 0 0 10px;
+  color: #720000;
+  font-size: 18px;
+  padding-left: 12px;
+}
+
+.portfolio-card p {
+  margin: 0;
+  color: #333;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.tag-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-list,
+.timeline {
+  padding-left: 12px;
+}
+
+.tag-list li {
+  background: linear-gradient(180deg, #fff2f2 0%, #ffe2e2 100%);
+  border: 1px solid #e4b1b1;
+  color: #620000;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-weight: 750;
+  font-size: 12px;
+}
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.timeline li {
+  background: #fff9f9;
+  border: 1px solid #f0d5d5;
+  border-radius: 14px;
+  padding: 12px 14px 12px 16px;
+  position: relative;
+}
+
+.timeline li::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #9f0000;
+  position: absolute;
+  left: 10px;
+  top: 18px;
+  box-shadow: 0 0 0 4px #ffe4e4;
+}
+
+.timeline strong {
+  display: block;
+  margin-left: 18px;
+  color: #530000;
+  font-size: 13px;
+}
+
+.timeline span {
+  display: block;
+  margin-left: 18px;
+  margin-top: 4px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .portfolio-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolio-card--wide {
+    grid-column: auto;
+  }
+}

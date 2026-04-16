@@ -81,7 +81,7 @@
 }
 
 .wrapper {
-  max-width: 920px;
+  max-width: 980px;
   margin: 0 auto;
   width: 100%;
   min-height: auto;
@@ -108,7 +108,7 @@
 }
 
 .left-panel {
-  width: 400px;
+  width: 430px;
   min-height: 560px;
   border-radius: 22px 0 0 22px;
   padding: 34px 32px;
@@ -233,9 +233,9 @@
 }
 
 .right-panel {
-  width: 420px;
+  width: 510px;
   min-height: 560px;
-  padding: 34px 32px;
+  padding: 30px 28px;
   background: #ffffff;
   border-radius: 0 22px 22px 0;
   margin-left: 0;
@@ -250,7 +250,7 @@
   min-height: 640px;
   max-height: none;
   overflow-y: visible;
-  padding-right: 32px;
+  padding-right: 28px;
   background: linear-gradient(180deg, #ffffff 0%, #fff8f8 100%);
 }
 
@@ -271,8 +271,8 @@
 }
 
 .field-group {
-  margin-bottom: 14px;
-  padding: 10px 12px 12px;
+  margin-bottom: 12px;
+  padding: 9px 11px 11px;
   border: 1px solid transparent;
   border-radius: 14px;
   background: #ffffff;
@@ -300,7 +300,7 @@
 
 input {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   margin-bottom: 0;
   border-radius: 10px;
   border: 1px solid #c8c8c8;
@@ -381,7 +381,7 @@ input:focus {
 }
 .login-btn {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
   background: linear-gradient(145deg, #a90000, #6c0000);
   border: none;
   color: white;
@@ -403,6 +403,11 @@ input:focus {
 
 .register-submit {
   margin-top: 8px;
+}
+
+.cancel-edit-btn {
+  margin-top: 10px;
+  background: linear-gradient(145deg, #777, #4f4f4f);
 }
 
 .login-btn:hover {
@@ -474,6 +479,22 @@ input:focus {
   background: #fffdfd;
 }
 
+.table-tools {
+  padding: 12px 14px;
+  background: #fffdfd;
+  border-bottom: 1px solid #efdfdf;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.table-tools input {
+  margin: 0;
+  flex: 1;
+  min-width: 240px;
+}
+
 .registered-table table {
   width: 100%;
   min-width: 340px;
@@ -510,6 +531,34 @@ input:focus {
 .registered-table td:last-child {
   font-family: monospace;
   letter-spacing: 0.5px;
+}
+
+.actions-col {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.table-action-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background: linear-gradient(145deg, #0e6eb8, #0a4f85);
+}
+
+.delete-btn {
+  background: linear-gradient(145deg, #d54242, #9d1f1f);
+}
+
+.clear-btn {
+  background: linear-gradient(145deg, #666, #444);
 }
 
 .success,
@@ -569,7 +618,7 @@ input:focus {
   }
 
   .right-panel--register {
-    padding-right: 32px;
+    padding-right: 18px;
   }
 
   .password-row {

@@ -172,7 +172,15 @@
           (click)="onRegister()"
           [disabled]="!registerEmail.trim() || !registerUserId.trim() || !registerPassword || !registerConfirmPassword"
         >
-          Register
+          {{ registerMode === 'edit' ? 'Save changes' : 'Register' }}
+        </button>
+        <button
+          *ngIf="registerMode === 'edit'"
+          type="button"
+          class="login-btn cancel-edit-btn"
+          (click)="cancelEdit()"
+        >
+          Cancel edit
         </button>
         <p class="success form-feedback" *ngIf="lastAction === 'register' && message">{{ message }}</p>
         <p class="error form-feedback" *ngIf="lastAction === 'register' && error">{{ error }}</p>
@@ -190,22 +198,40 @@
       <div class="registered-table output-panel" id="registration-output">
         <h3>Registration output</h3>
         <p class="registered-caption">Submitted accounts appear here immediately after you click Register.</p>
+        <div class="table-tools">
+          <input
+            type="text"
+            placeholder="Search by email or user ID"
+            [(ngModel)]="searchTerm"
+            (keyup.enter)="applySearch()"
+          />
+          <button type="button" class="table-action-btn edit-btn" (click)="applySearch()">Search</button>
+          <button type="button" class="table-action-btn clear-btn" (click)="clearSearch()">Clear</button>
+        </div>
         <div class="empty-output" *ngIf="registeredUsers.length === 0">
           No registered users yet. Fill out the form and click Register to see output here.
         </div>
-        <table *ngIf="registeredUsers.length > 0">
+        <div class="empty-output" *ngIf="registeredUsers.length > 0 && filteredUsers.length === 0">
+          No matching user found.
+        </div>
+        <table *ngIf="filteredUsers.length > 0">
           <thead>
             <tr>
               <th>#</th>
               <th>Email</th>
               <th>User ID</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let user of registeredUsers; let i = index">
+            <tr *ngFor="let user of filteredUsers; let i = index">
               <td>{{ i + 1 }}</td>
               <td>{{ user.email }}</td>
               <td>{{ user.userId }}</td>
+              <td class="actions-col">
+                <button type="button" class="table-action-btn edit-btn" (click)="startEdit(user)">Edit</button>
+                <button type="button" class="table-action-btn delete-btn" (click)="deleteUser(user.userId)">Delete</button>
+              </td>
             </tr>
           </tbody>
         </table>

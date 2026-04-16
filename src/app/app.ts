@@ -5,6 +5,192 @@ import { FormsModule } from '@angular/forms';
 type AuthView = 'auth' | 'dashboard';
 type AuthMode = 'login' | 'register';
 type LastAction = '' | 'login' | 'register';
+type RegisterMode = 'create' | 'edit';
+
+interface UserRecord {
+  email: string;
+  userId: string;
+  password: string;
+}
+
+interface RegisterInput {
+  email: string;
+  userId: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface IUserRepository {
+  getAll(): UserRecord[];
+  create(user: UserRecord): void;
+  update(originalUserId: string, user: UserRecord): boolean;
+  delete(userId: string): boolean;
+  findByEmail(email: string): UserRecord | undefined;
+  findByUserId(userId: string): UserRecord | undefined;
+}
+
+class InMemoryUserRepository implements IUserRepository {
+  private users: UserRecord[] = [];
+
+  getAll(): UserRecord[] {
+    return [...this.users];
+  }
+
+  create(user: UserRecord): void {
+    this.users.push(user);
+  }
+
+  update(originalUserId: string, user: UserRecord): boolean {
+    const index = this.users.findIndex((x) => x.userId === originalUserId);
+    if (index < 0) {
+      return false;
+    }
+    this.users[index] = user;
+    return true;
+  }
+
+  delete(userId: string): boolean {
+    const index = this.users.findIndex((x) => x.userId === userId);
+    if (index < 0) {
+      return false;
+    }
+    this.users.splice(index, 1);
+    return true;
+  }
+
+  findByEmail(email: string): UserRecord | undefined {
+    return this.users.find((x) => x.email === email);
+  }
+
+  findByUserId(userId: string): UserRecord | undefined {
+    return this.users.find((x) => x.userId === userId);
+  }
+}
+
+abstract class BaseValidator<T> {
+  abstract validate(input: T): string | null;
+}
+
+class EvsuRegistrationValidator extends BaseValidator<RegisterInput> {
+  private readonly evsuEmailRegex = /^[a-zA-Z0-9._%+-]+@evsu\.edu\.ph$/i;
+  private readonly strongPasswordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
+  validate(input: RegisterInput): string | null {
+    if (!input.email || !input.userId || !input.password || !input.confirmPassword) {
+      return 'Please fill in all fields.';
+    }
+    if (!this.evsuEmailRegex.test(input.email)) {
+      return 'Email must be a valid EVSU email (example: name@evsu.edu.ph).';
+    }
+    if (!/^\d{4}-\d{5}$/.test(input.userId)) {
+      return 'User ID must follow this format: 0000-00000.';
+    }
+    if (!this.strongPasswordRegex.test(input.password)) {
+      return 'Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.';
+    }
+    if (input.password !== input.confirmPassword) {
+      return 'Passwords do not match.';
+    }
+    return null;
+  }
+}
+
+class UserManagementService {
+  constructor(
+    private readonly repository: IUserRepository,
+    private readonly validator: BaseValidator<RegisterInput>
+  ) {}
+
+  getUsers(): UserRecord[] {
+    return this.repository.getAll();
+  }
+
+  register(input: RegisterInput): string | null {
+    const validationError = this.validator.validate(input);
+    if (validationError) {
+      return validationError;
+    }
+
+    if (this.repository.findByEmail(input.email)) {
+      return 'An account with this email already exists.';
+    }
+    if (this.repository.findByUserId(input.userId)) {
+      return 'This user ID is already registered.';
+    }
+
+    this.repository.create({
+      email: input.email,
+      userId: input.userId,
+      password: input.password
+    });
+    return null;
+  }
+
+  update(originalUserId: string, input: RegisterInput): string | null {
+    const validationError = this.validator.validate(input);
+    if (validationError) {
+      return validationError;
+    }
+
+    const emailOwner = this.repository.findByEmail(input.email);
+    if (emailOwner && emailOwner.userId !== originalUserId) {
+      return 'An account with this email already exists.';
+    }
+
+    const userIdOwner = this.repository.findByUserId(input.userId);
+    if (userIdOwner && userIdOwner.userId !== originalUserId) {
+      return 'This user ID is already registered.';
+    }
+
+    const updated = this.repository.update(originalUserId, {
+      email: input.email,
+      userId: input.userId,
+      password: input.password
+    });
+    if (!updated) {
+      return 'Selected user was not found.';
+    }
+    return null;
+  }
+
+  delete(userId: string): string | null {
+    return this.repository.delete(userId) ? null : 'Selected user was not found.';
+  }
+}
+
+class AuthService {
+  private readonly evsuEmailRegex = /^[a-zA-Z0-9._%+-]+@evsu\.edu\.ph$/i;
+
+  constructor(
+    private readonly repository: IUserRepository,
+    private readonly adminEmail: string,
+    private readonly adminPassword: string
+  ) {}
+
+  login(email: string, password: string): { ok: boolean; displayName?: string; error?: string } {
+    if (!email || !password) {
+      return { ok: false, error: 'Please enter your email and password.' };
+    }
+    if (!this.evsuEmailRegex.test(email)) {
+      return { ok: false, error: 'Please use your EVSU email format (name@evsu.edu.ph).' };
+    }
+
+    const isAdmin = email === this.adminEmail && password === this.adminPassword;
+    if (isAdmin) {
+      return { ok: true, displayName: 'Abina, John Roque B.' };
+    }
+
+    const isRegistered = this.repository.getAll().some(
+      (x) => x.email === email && x.password === password
+    );
+
+    if (!isRegistered) {
+      return { ok: false, error: 'Email or password does not match. Please try again.' };
+    }
+    return { ok: true, displayName: email };
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -23,10 +209,14 @@ export class App {
   message = '';
   error = '';
   lastAction: LastAction = '';
+  registerMode: RegisterMode = 'create';
+  editingOriginalUserId = '';
   rememberMe = false;
   showLoginPassword = false;
   showRegisterPassword = false;
   showRegisterConfirmPassword = false;
+  searchTerm = '';
+  activeSearchTerm = '';
 
   email = '';
   password = '';
@@ -37,18 +227,46 @@ export class App {
 
   correctEmail = 'john.abina@evsu.edu.ph';
   correctPassword = '2023-00145';
+  private readonly repository = new InMemoryUserRepository();
+  private readonly validator = new EvsuRegistrationValidator();
+  private readonly userService = new UserManagementService(this.repository, this.validator);
+  private readonly authService = new AuthService(
+    this.repository,
+    this.correctEmail,
+    this.correctPassword
+  );
 
-  registeredUsers: { email: string; userId: string; password: string }[] = [];
+  get registeredUsers(): UserRecord[] {
+    return this.userService.getUsers();
+  }
 
-  private readonly evsuEmailRegex = /^[a-zA-Z0-9._%+-]+@evsu\.edu\.ph$/i;
-  private readonly strongPasswordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+  get filteredUsers(): UserRecord[] {
+    const term = this.activeSearchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.registeredUsers;
+    }
+    return this.registeredUsers.filter(
+      (x) => x.email.includes(term) || x.userId.includes(term)
+    );
+  }
+
+  applySearch() {
+    this.activeSearchTerm = this.searchTerm;
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.activeSearchTerm = '';
+  }
 
   switchAuthMode(mode: AuthMode) {
     this.authMode = mode;
     this.message = '';
     this.error = '';
     this.lastAction = '';
+    this.searchTerm = '';
+    this.activeSearchTerm = '';
+    this.cancelEdit();
   }
 
   onRegister() {
@@ -58,96 +276,89 @@ export class App {
     const p = this.registerPassword;
     const c = this.registerConfirmPassword;
 
-    if (!e || !id || !p || !c) {
-      this.error = 'Please fill in all fields.';
-      this.message = '';
-      return;
-    }
-    if (!this.evsuEmailRegex.test(e)) {
-      this.error = 'Email must be a valid EVSU email (example: name@evsu.edu.ph).';
-      this.message = '';
-      return;
-    }
-    if (!/^\d{4}-\d{5}$/.test(id)) {
-      this.error = 'User ID must follow this format: 0000-00000.';
-      this.message = '';
-      return;
-    }
-    if (!this.strongPasswordRegex.test(p)) {
-      this.error =
-        'Password must be at least 8 characters and include uppercase, lowercase, number, and symbol.';
-      this.message = '';
-      return;
-    }
-    if (p !== c) {
-      this.error = 'Passwords do not match.';
+    const input: RegisterInput = {
+      email: e,
+      userId: id,
+      password: p,
+      confirmPassword: c
+    };
+
+    const error =
+      this.registerMode === 'create'
+        ? this.userService.register(input)
+        : this.userService.update(this.editingOriginalUserId, input);
+
+    if (error) {
+      this.error = error;
       this.message = '';
       return;
     }
 
-    const exists = this.registeredUsers.some(
-      (x) => x.email.toLowerCase() === e
-    );
-    if (exists) {
-      this.error = 'An account with this email already exists.';
-      this.message = '';
-      return;
-    }
-    const idExists = this.registeredUsers.some((x) => x.userId === id);
-    if (idExists) {
-      this.error = 'This user ID is already registered.';
-      this.message = '';
-      return;
-    }
-
-    this.registeredUsers.push({ email: e, userId: id, password: p });
-    this.message = 'Account created successfully. You can see it now in the table below.';
     this.error = '';
-    this.registerEmail = '';
-    this.registerUserId = '';
-    this.registerPassword = '';
-    this.registerConfirmPassword = '';
-    this.authMode = 'register';
+    this.message =
+      this.registerMode === 'create'
+        ? 'Account created successfully. You can see it now in the table below.'
+        : 'User updated successfully.';
+    this.clearRegisterFields();
+    this.registerMode = 'create';
+    this.editingOriginalUserId = '';
   }
 
   onLogin() {
     this.lastAction = 'login';
     const e = this.email.trim().toLowerCase();
     const p = this.password.trim();
-
-    if (!e || !p) {
+    const result = this.authService.login(e, p);
+    if (!result.ok) {
       this.message = '';
-      this.error = 'Please enter your email and password.';
-      return;
-    }
-    if (!this.evsuEmailRegex.test(e)) {
-      this.message = '';
-      this.error = 'Please use your EVSU email format (name@evsu.edu.ph).';
+      this.error = result.error || 'Login failed.';
       return;
     }
 
-    const matchHardcoded =
-      e === this.correctEmail &&
-      p === this.correctPassword;
+    this.error = '';
+    this.message = '';
+    this.loggedInDisplayName = result.displayName || e;
+    this.view = 'dashboard';
+  }
 
-    const matchRegistered = this.registeredUsers.some(
-      (x) =>
-        x.email.toLowerCase() === e && x.password === p
-    );
+  startEdit(user: UserRecord) {
+    this.registerMode = 'edit';
+    this.editingOriginalUserId = user.userId;
+    this.registerEmail = user.email;
+    this.registerUserId = user.userId;
+    this.registerPassword = user.password;
+    this.registerConfirmPassword = user.password;
+    this.lastAction = 'register';
+    this.message = '';
+    this.error = '';
+  }
 
-    if (matchHardcoded || matchRegistered) {
-      this.error = '';
+  deleteUser(userId: string) {
+    this.lastAction = 'register';
+    const error = this.userService.delete(userId);
+    if (error) {
+      this.error = error;
       this.message = '';
-      if (matchHardcoded) {
-        this.loggedInDisplayName = 'Abina, John Roque B.';
-      } else {
-        this.loggedInDisplayName = e;
-      }
-      this.view = 'dashboard';
-    } else {
-      this.message = '';
-      this.error = 'Email or password does not match. Please try again.';
+      return;
     }
+    if (this.registerMode === 'edit' && this.editingOriginalUserId === userId) {
+      this.cancelEdit();
+    }
+    this.error = '';
+    this.message = 'User deleted successfully.';
+  }
+
+  cancelEdit() {
+    this.registerMode = 'create';
+    this.editingOriginalUserId = '';
+    this.clearRegisterFields();
+  }
+
+  private clearRegisterFields() {
+    this.registerEmail = '';
+    this.registerUserId = '';
+    this.registerPassword = '';
+    this.registerConfirmPassword = '';
   }
 
   logout() {
@@ -158,6 +369,9 @@ export class App {
     this.message = '';
     this.error = '';
     this.lastAction = '';
+    this.searchTerm = '';
+    this.activeSearchTerm = '';
+    this.cancelEdit();
     this.loggedInDisplayName = '';
   }
 }
